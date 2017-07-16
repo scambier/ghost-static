@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-const scrape = require('website-scraper'), // Version 3+
+const scraper = require('website-scraper'), // Version 3+
   rimraf = require('rimraf'),
   fs = require('fs'),
   mv = require('mv'),
@@ -15,9 +15,14 @@ const optionsPath = path.join(process.cwd(), 'scrap-ghost.json');
 let mOptions;
 try {
   mOptions = require(optionsPath);
+} catch (e) {
+  throw new Error('Missing file scrap-ghost.json in current directory. See module documentation.')
+}
+try {
+
   console.log('Loaded JSON:');
   console.log(mOptions);
-  const reqOptions = ['ghostURL', 'tmpFolder', 'staticFolder', 'publicURLd'];
+  const reqOptions = ['ghostURL', 'tmpFolder', 'staticFolder', 'publicURL'];
   reqOptions.map(opt => {
     if (!mOptions.hasOwnProperty(opt)) {
       throw new Error(`Missing value for: ${opt}`);
@@ -84,7 +89,7 @@ const
  * Delete tmp and static folders before scraping
  * @returns {Promise}
  */
-function deleteFolders () {
+function deleteFolders() {
   return new Promise((resolve, reject) => {
     rimraf(tmpFolder, e => {
       if (e) reject(e);
@@ -96,13 +101,11 @@ function deleteFolders () {
   })
 }
 
-return;
-
 deleteFolders()
   .then(() => {
     console.log('Deleted old content');
     console.log('Scraping ' + ghostURL);
-    return scrape(mOptions)
+    return scraper(wsOptions)
   })
   .then(result => {
     // Move the site from the tmp folder to the static folder
