@@ -1,0 +1,23 @@
+{
+  "name": "ghost-static",
+  "version": "1.0.0",
+  "description": "A tool to convert you Ghost blog to a static website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "scrap-ghost": "bin/scrap.js"
+  },
+  "engines": {
+    "node": ">=4.8.3"
+  },
+  "author": "Simon Cambier <cambier.simon@gmail.com> (https://scambier.github.io/)",
+  "license": "MIT",
+  "dependencies": {
+    "isbinaryfile": "^3.0.2",
+    "mv": "^2.1.1",
+    "rimraf": "^2.6.1",
+    "website-scraper": "^3.1.0"
+  }
+}
