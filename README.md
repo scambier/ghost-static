@@ -14,10 +14,10 @@ Create a `ghost-static.json` in your Ghost directory:
   "publicURL": "https://scambier.github.io/blog"
 }
 ```
-- ghostURL: the url to the local instance of Ghost.
-- tmpFolder: a temporary folder where the Ghost blog will be scraped
-- static: the "final" folder where you'll find your static files
-- publicURL: the public url that is (or will be) used to acces your static blog
+- `ghostURL`: the url to the local instance of Ghost.
+- `tmpFolder`: a temporary folder where the Ghost blog will be scraped
+- `static`: the "final" folder where you'll find your static files
+- `publicURL`: the public url that is (or will be) used to acces your static blog
 
 ## Usage
 
