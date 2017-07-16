@@ -1,6 +1,6 @@
 {
   "name": "ghost-static",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A tool to convert you Ghost blog to a static website",
   "main": "index.js",
   "scripts": {

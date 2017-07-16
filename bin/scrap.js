@@ -101,22 +101,30 @@ function deleteFolders() {
   })
 }
 
+/**
+ * Move folders from tmp. Wait a bit before this if a file is being written
+ * @param result
+ */
+function moveFolders(result) {
+  setTimeout(() => {
+    // Move the site from the tmp folder to the static folder
+    const domain = url.parse(ghostURL).host.replace(':', '_');
+    mv(path.join(tmpFolder, domain), staticFolder, {mkdirp: true}, err => {
+      if (err) {
+        console.log(err);
+      }
+      console.log('Done!');
+    });
+  }, 1000);
+}
+
 deleteFolders()
   .then(() => {
     console.log('Deleted old content');
     console.log('Scraping ' + ghostURL);
     return scraper(wsOptions)
   })
-  .then(result => {
-    // Move the site from the tmp folder to the static folder
-    const domain = url.parse(ghostURL).host.replace(':', '_');
-    mv(path.join(tmpFolder, domain), staticFolder, {mkdirp: true}, err => {
-      if (err) {
-        console.log(err)
-      }
-      console.log('Done!')
-    })
-  })
+  .then(moveFolders)
   .catch(err => {
     console.error(err.stack);
   });
