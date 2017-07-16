@@ -1,5 +1,7 @@
 # Ghost-static
-Convert your dynamic Ghost blog to a static website
+Convert your dynamic Ghost blog to a static website.
+
+This tool has been tested for Ghost 0.11. It works with Ghost 1.0.0-rc.1, but the floating-header does not appear.
 
 ## Installation
 
