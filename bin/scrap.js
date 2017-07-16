@@ -11,12 +11,12 @@ const scraper = require('website-scraper'), // Version 3+
 /**
  * Find & load options file
  */
-const optionsPath = path.join(process.cwd(), 'scrap-ghost.json');
+const optionsPath = path.join(process.cwd(), 'ghost-static.json');
 let mOptions;
 try {
   mOptions = require(optionsPath);
 } catch (e) {
-  throw new Error('Missing file scrap-ghost.json in current directory. See module documentation.')
+  throw new Error('Missing file ghost-static.json in current directory. See module documentation.')
 }
 try {
 
