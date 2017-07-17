@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 'use strict';
-const scraper = require('website-scraper'), // Version 3+
+const
+  scraper = require('website-scraper'),
   rimraf = require('rimraf'),
   fs = require('fs'),
   mv = require('mv'),
   path = require('path'),
   url = require('url'),
-  isBinary = require('isbinaryfile');
+  isBinary = require('isbinaryfile'),
+  syncRequest = require('sync-request');
 
 /**
  * Find & load options file
@@ -57,11 +59,7 @@ const
      * @returns {boolean}
      */
     urlFilter: url => {
-      const download = url.indexOf(ghostURL) === 0;
-      if (download) {
-        console.log(`Downloading ${url}`);
-      }
-      return download;
+      return url.indexOf(ghostURL) === 0;
     },
 
     /**
@@ -81,7 +79,13 @@ const
           }
         }
       })
+    },
 
+    httpResponseHandler: response => {
+      console.log(`Downloading ${response.request.href}`);
+      // Fetch items synchronously to avoid some handlebars-related bugs
+      const request = syncRequest('GET', response.request.href);
+      return Promise.resolve(request.getBody('utf8'));
     }
   };
 
@@ -114,6 +118,7 @@ function moveFolders(result) {
         console.log(err);
       }
       console.log('Done!');
+      console.log(`Your static blog is stored in ${path.join(process.cwd(), staticFolder)}`)
     });
   }, 1000);
 }
