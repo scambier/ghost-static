@@ -1,6 +1,6 @@
 {
   "name": "ghost-static",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A tool to convert you Ghost blog to a static website",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,6 @@
     "isbinaryfile": "^3.0.2",
     "mv": "^2.1.1",
     "rimraf": "^2.6.1",
-    "sync-request": "^4.1.0",
     "website-scraper": "^3.1.0"
   }
 }

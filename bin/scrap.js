@@ -7,8 +7,7 @@ const
   mv = require('mv'),
   path = require('path'),
   url = require('url'),
-  isBinary = require('isbinaryfile'),
-  syncRequest = require('sync-request');
+  isBinary = require('isbinaryfile');
 
 /**
  * Find & load options file
@@ -81,11 +80,8 @@ const
       })
     },
 
-    httpResponseHandler: response => {
-      console.log(`Downloading ${response.request.href}`);
-      // Fetch items synchronously to avoid some handlebars-related bugs
-      const request = syncRequest('GET', response.request.href);
-      return Promise.resolve(request.getBody('utf8'));
+    onResourceError: e => {
+      if (e) console.error(e);
     }
   };
 
