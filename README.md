@@ -1,8 +1,8 @@
 # Ghost-static
 Convert your dynamic Ghost blog to a static website.
 
-This tool has been tested for Ghost 0.11 and Ghost 1.0.0-rc.1  
-This is a work in progress, some Ghost themes may not work correctly.
+**This is a buggy work in progress, some Ghost themes and features may not work correctly.**  
+I do not plan to actively maintain this module as I switched to Jekyll.
 
 ## Installation
 
@@ -14,7 +14,7 @@ Create a `ghost-static.json` in your Ghost directory:
   "ghostURL": "http://localhost:2368",
   "tmpFolder": "tmp/",
   "staticFolder": "blog/",
-  "publicURL": "https://scambier.github.io/blog"
+  "publicURL": "https://yourawesomeblog.com"
 }
 ```
 - `ghostURL`: the url to the local instance of Ghost.
