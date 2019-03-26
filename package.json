@@ -22,6 +22,7 @@
     "isbinaryfile": "^3.0.2",
     "mv": "^2.1.1",
     "rimraf": "^2.6.1",
-    "website-scraper": "^3.1.0"
+    "website-scraper": "^4.0.0",
+    "website-scraper-phantom": "^1.0.0"
   }
 }

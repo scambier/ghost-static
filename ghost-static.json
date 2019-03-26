@@ -2,5 +2,5 @@
   "ghostURL": "http://localhost:2368",
   "tmpFolder": "tmp/",
   "staticFolder": "blog/",
-  "publicURL": "https://scambier.github.io/blog"
+  "publicURL": "http://localhost:8080"
 }

@@ -1,13 +1,44 @@
 #!/usr/bin/env node
 'use strict';
 const
-  scraper = require('website-scraper'),
+  scrape = require('website-scraper'),
+  PhantomPlugin = require('website-scraper-phantom'),
   rimraf = require('rimraf'),
   fs = require('fs'),
   mv = require('mv'),
   path = require('path'),
   url = require('url'),
   isBinary = require('isbinaryfile');
+
+class MyPlugin {
+
+  apply(registerAction) {
+    /**
+     * Replace references of [ghostURL] by [publicURL] in non-binary files
+     * @param resource
+     */
+    registerAction('onResourceSaved', ({resource}) => {
+      let path = tmpFolder + resource.filename;
+      console.log(path)
+      isBinary(path, (err, result) => {
+        if (!result) {
+          try {
+            let data = fs.readFileSync(path, 'utf8');
+            let result = data.replace(new RegExp(ghostURL, 'g'), publicURL);
+            fs.writeFileSync(path, result, 'utf8');
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      })
+    })
+
+
+    registerAction('onResourceError', ({resource, error}) => {
+      if (e) console.error(e);
+    })
+  }
+}
 
 /**
  * Find & load options file
@@ -41,6 +72,7 @@ const
 
   wsOptions = {
     urls: [ghostURL],
+    plugins: [ new PhantomPlugin(), new MyPlugin() ],
     directory: tmpFolder,
     recursive: true,
     prettifyUrls: true,
@@ -59,29 +91,6 @@ const
      */
     urlFilter: url => {
       return url.indexOf(ghostURL) === 0;
-    },
-
-    /**
-     * Replace references of [ghostURL] by [publicURL] in non-binary files
-     * @param resource
-     */
-    onResourceSaved: resource => {
-      let path = tmpFolder + resource.filename;
-      isBinary(path, (err, result) => {
-        if (!result) {
-          try {
-            let data = fs.readFileSync(path, 'utf8');
-            let result = data.replace(new RegExp(ghostURL, 'g'), publicURL);
-            fs.writeFileSync(path, result, 'utf8');
-          } catch (err) {
-            console.error(err);
-          }
-        }
-      })
-    },
-
-    onResourceError: e => {
-      if (e) console.error(e);
     }
   };
 
@@ -123,7 +132,7 @@ deleteFolders()
   .then(() => {
     console.log('Deleted old content');
     console.log('Scraping ' + ghostURL);
-    return scraper(wsOptions)
+    return scrape(wsOptions)
   })
   .then(moveFolders)
   .catch(err => {
