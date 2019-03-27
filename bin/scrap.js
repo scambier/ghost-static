@@ -8,7 +8,6 @@ const mv = require('mv')
 const path = require('path')
 const url = require('url')
 const isBinary = require('isbinaryfile')
-const puppeteer = require('puppeteer');
 
 class MyPlugin {
 
@@ -33,21 +32,21 @@ class MyPlugin {
       })
     })
 
-    registerAction('afterResponse', async ({ response }) => {
-      const contentType = response.headers['content-type'];
-      const isHtml = contentType && contentType.split(';')[0] === 'text/html';
-      if (isHtml) {
-        const page = await browser.newPage();
-        await page.goto(response.request.href, {
-          waitUntil: 'networkidle2'
-        })
-        const content = await page.content()
-        await page.close()
-        return content
-      } else {
-        return response.body
-      }
-    })
+    // registerAction('afterResponse', async ({ response }) => {
+    //   const contentType = response.headers['content-type'];
+    //   const isHtml = contentType && contentType.split(';')[0] === 'text/html';
+    //   if (isHtml) {
+    //     const page = await browser.newPage();
+    //     await page.goto(response.request.href, {
+    //       waitUntil: 'networkidle2'
+    //     })
+    //     const content = await page.content()
+    //     await page.close()
+    //     return content
+    //   } else {
+    //     return response.body
+    //   }
+    // })
 
     registerAction('onResourceError', ({ resource, error }) => {
       if (error) console.error(error);
@@ -143,18 +142,12 @@ function moveFolders() {
   }, 1000);
 }
 
-
-let browser;
 (async function () {
   try {
-    // Init puppeteer
-    browser = await puppeteer.launch();
-
     await deleteFolders()
     console.log('Deleted old content');
     console.log('Scraping ' + ghostURL);
     await scrape(wsOptions)
-    await browser.close()
     moveFolders()
   } catch (e) {
     console.error(e)
