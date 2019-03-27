@@ -21,8 +21,8 @@
   "dependencies": {
     "isbinaryfile": "^3.0.2",
     "mv": "^2.1.1",
+    "puppeteer": "^1.13.0",
     "rimraf": "^2.6.1",
-    "website-scraper": "^4.0.0",
-    "website-scraper-phantom": "^1.0.0"
+    "website-scraper": "^4.0.0"
   }
 }

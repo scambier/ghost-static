@@ -1,14 +1,14 @@
 #!/usr/bin/env node
+
 'use strict';
-const
-  scrape = require('website-scraper'),
-  PhantomPlugin = require('website-scraper-phantom'),
-  rimraf = require('rimraf'),
-  fs = require('fs'),
-  mv = require('mv'),
-  path = require('path'),
-  url = require('url'),
-  isBinary = require('isbinaryfile');
+const scrape = require('website-scraper')
+const rimraf = require('rimraf')
+const fs = require('fs')
+const mv = require('mv')
+const path = require('path')
+const url = require('url')
+const isBinary = require('isbinaryfile')
+const puppeteer = require('puppeteer');
 
 class MyPlugin {
 
@@ -17,7 +17,7 @@ class MyPlugin {
      * Replace references of [ghostURL] by [publicURL] in non-binary files
      * @param resource
      */
-    registerAction('onResourceSaved', ({resource}) => {
+    registerAction('onResourceSaved', ({ resource }) => {
       let path = tmpFolder + resource.filename;
       console.log(path)
       isBinary(path, (err, result) => {
@@ -33,9 +33,24 @@ class MyPlugin {
       })
     })
 
+    registerAction('afterResponse', async ({ response }) => {
+      const contentType = response.headers['content-type'];
+      const isHtml = contentType && contentType.split(';')[0] === 'text/html';
+      if (isHtml) {
+        const page = await browser.newPage();
+        await page.goto(response.request.href, {
+          waitUntil: 'networkidle2'
+        })
+        const content = await page.content()
+        await page.close()
+        return content
+      } else {
+        return response.body
+      }
+    })
 
-    registerAction('onResourceError', ({resource, error}) => {
-      if (e) console.error(e);
+    registerAction('onResourceError', ({ resource, error }) => {
+      if (error) console.error(error);
     })
   }
 }
@@ -64,35 +79,34 @@ try {
   throw e;
 }
 
-const
-  ghostURL = mOptions['ghostURL'], // Your Ghost's local instance
-  tmpFolder = mOptions['tmpFolder'], // Where to scrap it
-  staticFolder = mOptions['staticFolder'], // Where to save it
-  publicURL = mOptions['publicURL'], // Your Ghost's public url (with subfolder if needed)
+const ghostURL = mOptions['ghostURL'] // Your Ghost's local instance
+const tmpFolder = mOptions['tmpFolder'] // Where to scrap it
+const staticFolder = mOptions['staticFolder'] // Where to save it
+const publicURL = mOptions['publicURL'] // Your Ghost's public url (with subfolder if needed)
 
-  wsOptions = {
-    urls: [ghostURL],
-    plugins: [ new PhantomPlugin(), new MyPlugin() ],
-    directory: tmpFolder,
-    recursive: true,
-    prettifyUrls: true,
-    filenameGenerator: 'bySiteStructure',
+const wsOptions = {
+  urls: [ghostURL],
+  plugins: [new MyPlugin()],
+  directory: tmpFolder,
+  recursive: true,
+  prettifyUrls: true,
+  filenameGenerator: 'bySiteStructure',
 
-    request: {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.117 Safari/537.36'
-      }
-    },
-
-    /**
-     * Only download files coming from the Ghost instance
-     * @param url
-     * @returns {boolean}
-     */
-    urlFilter: url => {
-      return url.indexOf(ghostURL) === 0;
+  request: {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.117 Safari/537.36'
     }
-  };
+  },
+
+  /**
+   * Only download files coming from the Ghost instance
+   * @param url
+   * @returns {boolean}
+   */
+  urlFilter: url => {
+    return url.indexOf(ghostURL) === 0;
+  }
+}
 
 /**
  * Delete tmp and static folders before scraping
@@ -112,13 +126,14 @@ function deleteFolders() {
 
 /**
  * Move folders from tmp. Wait a bit before this if a file is being written
- * @param result
  */
-function moveFolders(result) {
+function moveFolders() {
   setTimeout(() => {
     // Move the site from the tmp folder to the static folder
     const domain = url.parse(ghostURL).host.replace(':', '_');
-    mv(path.join(tmpFolder, domain), staticFolder, {mkdirp: true}, err => {
+    mv(path.join(tmpFolder, domain), staticFolder, {
+      mkdirp: true
+    }, err => {
       if (err) {
         console.log(err);
       }
@@ -128,13 +143,20 @@ function moveFolders(result) {
   }, 1000);
 }
 
-deleteFolders()
-  .then(() => {
+
+let browser;
+(async function () {
+  try {
+    // Init puppeteer
+    browser = await puppeteer.launch();
+
+    await deleteFolders()
     console.log('Deleted old content');
     console.log('Scraping ' + ghostURL);
-    return scrape(wsOptions)
-  })
-  .then(moveFolders)
-  .catch(err => {
-    console.error(err.stack);
-  });
+    await scrape(wsOptions)
+    await browser.close()
+    moveFolders()
+  } catch (e) {
+    console.error(e)
+  }
+})()
