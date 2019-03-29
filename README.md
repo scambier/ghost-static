@@ -1,39 +1,38 @@
-# Ghost-static
+# Ghost static
 
-Convert your dynamic Ghost blog to a static website. Works without any external dependecy.
+[![npm version](https://badge.fury.io/js/ghost-static.svg)](https://badge.fury.io/js/ghost-static) [![dep](https://david-dm.org/scambier/ghost-static.svg)](https://david-dm.org/scambier/ghost-static#info=devDependencies)
 
-**This a work in progress, some Ghost themes and features may not work correctly.**
+**Convert your dynamic Ghost blog to a static website.**
 
-This module works as intended on Windows, with the default Casper theme.
+Works without any external dependency, tested on Windows with Ghost 2 and the default Casper theme.
 
 ## Installation
 
-For ease of use, I recommend a global installation:
-
-`npm install -g ghost-static`
-
-## Setup
-
-You can optionally create a `ghost-static.json` in your local directory.
-
-Here are the default values:
-
-```
-{
-  "localURL": "http://localhost:2368",
-  "destFolder": "static/",
-  "publishURL": "http://localhost:8080"
-}
-```
-
-- `localURL`: the url to the local instance of Ghost
-- `destFolder`: where to save static files
-- `publishURL`: the public url that is used to acces your static blog
+`$ npm install -g ghost-static`
 
 ## Usage
 
-Type `ghost-static` once your local Ghost instance is up and running. All files will be downloaded in your destination folder.
+```
+$ ghost-static -h
+
+Usage: ghost-static [options] [command]
+
+Commands:
+  help     Display help
+  version  Display version
+
+Options:
+  -d, --dest [value]     The folder where the static files will be downloaded (defaults to "static")
+  -h, --help             Output usage information
+  -p, --publish [value]  The url that will point to the static Ghost site (defaults to "http://localhost:8080")
+  -s, --source [value]   The current running instance of Ghost (defaults to "http://localhost:2368")
+  -v, --version          Output the version number
+```
+
+## Issues
+
+If your Ghost setup or theme doesn't work, fill a bug and I'll see what I can do.
 
 ## Requirements
 
-NodeJS 8+
+Node LTS

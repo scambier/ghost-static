@@ -1,6 +1,6 @@
 {
   "name": "ghost-static",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "A tool to convert you Ghost blog to a static website",
   "main": "index.js",
   "scripts": {
@@ -10,27 +10,19 @@
     "ghost-static": "bin/scrap.js"
   },
   "engines": {
-    "node": ">=4.8.3"
+    "node": ">=10.0.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/scambier/ghost-static"
   },
-  "author": "Simon Cambier <cambier.simon@gmail.com> (https://scambier.github.io/)",
+  "author": "Simon Cambier <simon.cambier@protonmail.com> (https://scambier.github.io/)",
   "license": "MIT",
   "dependencies": {
-    "eslint-plugin-react": "^7.12.4",
-    "isbinaryfile": "^3.0.2",
+    "args": "^5.0.1",
+    "isbinaryfile": "^4.0.0",
     "mv": "^2.1.1",
     "rimraf": "^2.6.1",
     "website-scraper": "^4.0.0"
-  },
-  "devDependencies": {
-    "eslint": "^5.15.3",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0"
   }
 }

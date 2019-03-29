@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 'use strict'
+const args = require('args')
 const scrape = require('website-scraper')
 const rimraf = require('rimraf')
 const fs = require('fs')
@@ -9,24 +10,36 @@ const path = require('path')
 const url = require('url')
 const isBinary = require('isbinaryfile')
 
-class MyPlugin {
+args
+  .option('source', 'The current running instance of Ghost','http://localhost:2368')
+  .option('dest', 'The folder where the static files will be downloaded', path.resolve('static'))
+  .option('publish', 'The url that will point to the static Ghost site', 'http://localhost:8080')
+  
+
+const flags = args.parse(process.argv, {
+  usageFilter(usage) {
+    return usage.replace('scrap.js', 'ghost-static')
+  }
+})
+
+class RewritterPlugin {
   apply (registerAction) {
     /**
      * Replace references of [localURL] by [publishURL] in non-binary files
      * @param resource
      */
     registerAction('onResourceSaved', ({ resource }) => {
-      let path = scraper.tmpFolder + resource.filename
-      isBinary(path, (err, result) => {
+      let resPath = path.join(scraper.tmpFolder, resource.filename)
+      isBinary(resPath, (err, result) => {
         if (err) throw err
         if (!result) {
           try {
-            let data = fs.readFileSync(path, 'utf8')
+            let data = fs.readFileSync(resPath, 'utf8')
             let result = data.replace(
               new RegExp(scraper.localURL, 'g'),
               scraper.publishURL
             )
-            fs.writeFileSync(path, result, 'utf8')
+            fs.writeFileSync(resPath, result, 'utf8')
           } catch (e) {
             console.error(e)
           }
@@ -47,37 +60,21 @@ class MyPlugin {
 
 class Scraper {
   constructor () {
-    this.optionsPath = path.join(process.cwd(), 'ghost-static.json')
-    let options = {}
-    try {
-      options = require(this.optionsPath)
-    } catch (e) {
-      console.log('Missing options file, will user default values')
-    }
-    this.loadOptions(options)
-  }
-
-  loadOptions ({
-    localURL = 'http://localhost:2368',
-    publishURL = 'http://localhost:8080',
-    tmpFolder = 'tmp/',
-    destFolder = 'static/'
-  }) {
-    this.localURL = localURL
-    this.publishURL = publishURL
-    this.tmpFolder = tmpFolder
-    this.destFolder = destFolder
+    this.localURL = flags.source
+    this.publishURL = flags.publish
+    this.destFolder = path.resolve(flags.dest)
+    this.tmpFolder = path.resolve('tmp')
 
     console.log('----')
-    console.log(`Will download from ${this.localURL} to ${this.destFolder}`)
-    console.log(`All references to ${this.localURL} will be rewritten to ${this.publishURL}`)
+    console.log(`Will download from ${this.localURL} to ${path.resolve(this.destFolder)}`)
+    console.log(`All references to ${this.localURL} will be replaced by ${this.publishURL}`)
     console.log('----')
   }
 
   getScraperOptions () {
     return {
       urls: [this.localURL],
-      plugins: [new MyPlugin(this.tmpFolder, this.publishURL)],
+      plugins: [new RewritterPlugin(this.tmpFolder, this.publishURL)],
       requestConcurrency: 1,
       directory: this.tmpFolder,
       recursive: true,
@@ -140,10 +137,7 @@ class Scraper {
           }
           console.log('Done!')
           console.log(
-            `Your static blog is stored in ${path.join(
-              process.cwd(),
-              this.destFolder
-            )}`
+            `Your static blog is stored in ${this.destFolder}`
           )
         }
       )
