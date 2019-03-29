@@ -8,11 +8,11 @@ const fs = require('fs')
 const mv = require('mv')
 const path = require('path')
 const url = require('url')
-const isBinary = require('isbinaryfile')
+const isBinary = require('isbinaryfile').isBinaryFile
 
 args
   .option('source', 'The current running instance of Ghost','http://localhost:2368')
-  .option('dest', 'The folder where the static files will be downloaded', path.resolve('static'))
+  .option('dest', 'The folder where the static files will be downloaded', 'static')
   .option('publish', 'The url that will point to the static Ghost site', 'http://localhost:8080')
   
 
@@ -28,23 +28,21 @@ class RewritterPlugin {
      * Replace references of [localURL] by [publishURL] in non-binary files
      * @param resource
      */
-    registerAction('onResourceSaved', ({ resource }) => {
+    registerAction('onResourceSaved', async ({ resource }) => {
       let resPath = path.join(scraper.tmpFolder, resource.filename)
-      isBinary(resPath, (err, result) => {
-        if (err) throw err
-        if (!result) {
-          try {
-            let data = fs.readFileSync(resPath, 'utf8')
-            let result = data.replace(
-              new RegExp(scraper.localURL, 'g'),
-              scraper.publishURL
-            )
-            fs.writeFileSync(resPath, result, 'utf8')
-          } catch (e) {
-            console.error(e)
-          }
+      const binary = await isBinary(fs.readFileSync(resPath))
+      if (!binary) {
+        try {
+          let data = fs.readFileSync(resPath, 'utf8')
+          let result = data.replace(
+            new RegExp(scraper.localURL, 'g'),
+            scraper.publishURL
+          )
+          fs.writeFileSync(resPath, result, 'utf8')
+        } catch (e) {
+          console.error(e)
         }
-      })
+      }
     })
 
     registerAction('afterResponse', async ({ response }) => {
@@ -74,7 +72,7 @@ class Scraper {
   getScraperOptions () {
     return {
       urls: [this.localURL],
-      plugins: [new RewritterPlugin(this.tmpFolder, this.publishURL)],
+      plugins: [new RewritterPlugin()],
       requestConcurrency: 1,
       directory: this.tmpFolder,
       recursive: true,
