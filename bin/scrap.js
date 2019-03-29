@@ -8,7 +8,6 @@ const mv = require('mv')
 const path = require('path')
 const url = require('url')
 const isBinary = require('isbinaryfile')
-const puppeteer = require('puppeteer')
 
 class MyPlugin {
   apply (registerAction) {
@@ -17,7 +16,6 @@ class MyPlugin {
      * @param resource
      */
     registerAction('onResourceSaved', ({ resource }) => {
-      console.log('saved')
       let path = scraper.tmpFolder + resource.filename
       isBinary(path, (err, result) => {
         if (err) throw err
@@ -38,20 +36,7 @@ class MyPlugin {
 
     registerAction('afterResponse', async ({ response }) => {
       console.log(response.request.href)
-      const contentType = response.headers['content-type']
-      const isHtml = contentType && contentType.split(';')[0] === 'text/html'
-      if (isHtml) {
-        const page = await scraper.browser.newPage()
-        await page.goto(response.request.href, {
-          waitUntil: 'networkidle2'
-        })
-        await page.waitFor(1000)
-        const content = await page.content()
-        await page.close()
-        return content
-      } else {
-        return response.body
-      }
+      return response.body
     })
 
     registerAction('onResourceError', ({ resource, error }) => {
@@ -74,7 +59,7 @@ class Scraper {
 
   loadOptions ({
     localURL = 'http://localhost:2368',
-    publishURL = 'http://localhost:8081',
+    publishURL = 'http://localhost:8080',
     tmpFolder = 'tmp/',
     destFolder = 'static/'
   }) {
@@ -82,12 +67,18 @@ class Scraper {
     this.publishURL = publishURL
     this.tmpFolder = tmpFolder
     this.destFolder = destFolder
+
+    console.log('----')
+    console.log(`Will download from ${this.localURL} to ${this.destFolder}`)
+    console.log(`All references to ${this.localURL} will be rewritten to ${this.publishURL}`)
+    console.log('----')
   }
 
   getScraperOptions () {
     return {
       urls: [this.localURL],
       plugins: [new MyPlugin(this.tmpFolder, this.publishURL)],
+      requestConcurrency: 1,
       directory: this.tmpFolder,
       recursive: true,
       prettifyUrls: true,
@@ -113,12 +104,8 @@ class Scraper {
 
   async start () {
     try {
-      this.browser = await puppeteer.launch({ headless: true })
       await this.deleteFolders()
-      console.log('Deleted old content')
-      console.log('Scraping ' + this.localURL)
       await scrape(this.getScraperOptions())
-      await this.browser.close()
       this.moveFolders()
     } catch (e) {
       console.error(e)
@@ -140,7 +127,7 @@ class Scraper {
   moveFolders () {
     setTimeout(() => {
       // Move the site from the tmp folder to the static folder
-      const domain = url.URL(this.localURL).host.replace(':', '_')
+      const domain = new url.URL(this.localURL).host.replace(':', '_')
       mv(
         path.join(this.tmpFolder, domain),
         this.destFolder,

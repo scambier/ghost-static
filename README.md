@@ -1,31 +1,39 @@
 # Ghost-static
-Convert your dynamic Ghost blog to a static website.
 
-**This is a buggy work in progress, some Ghost themes and features may not work correctly.**  
-I do not plan to actively maintain this module as I switched to Jekyll.
+Convert your dynamic Ghost blog to a static website. Works without any external dependecy.
+
+**This a work in progress, some Ghost themes and features may not work correctly.**
+
+This module works as intended on Windows, with the default Casper theme.
 
 ## Installation
 
+For ease of use, I recommend a global installation:
+
 `npm install -g ghost-static`
 
-Create a `ghost-static.json` in your Ghost directory:
+## Setup
+
+You can optionally create a `ghost-static.json` in your local directory.
+
+Here are the default values:
+
 ```
 {
-  "ghostURL": "http://localhost:2368",
-  "tmpFolder": "tmp/",
-  "staticFolder": "blog/",
-  "publicURL": "https://yourawesomeblog.com"
+  "localURL": "http://localhost:2368",
+  "destFolder": "static/",
+  "publishURL": "http://localhost:8080"
 }
 ```
-- `ghostURL`: the url to the local instance of Ghost.
-- `tmpFolder`: a temporary folder where the Ghost blog will be scraped
-- `static`: the "final" folder where you'll find your static files
-- `publicURL`: the public url that is (or will be) used to acces your static blog
+
+- `localURL`: the url to the local instance of Ghost
+- `destFolder`: where to save static files
+- `publishURL`: the public url that is used to acces your static blog
 
 ## Usage
 
-Type `ghost-static` once your local Ghost instance is up and running.
+Type `ghost-static` once your local Ghost instance is up and running. All files will be downloaded in your destination folder.
 
 ## Requirements
 
-NodeJS 4.8+
+NodeJS 8+

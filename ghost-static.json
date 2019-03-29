@@ -1,6 +1,5 @@
 {
-  "ghostURL": "http://localhost:2368",
-  "tmpFolder": "tmp/",
-  "staticFolder": "blog/",
-  "publicURL": "http://localhost:8080"
+  "localURL": "http://localhost:2368",
+  "destFolder": "static/",
+  "publishURL": "http://localhost:8080"
 }
