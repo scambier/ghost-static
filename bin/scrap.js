@@ -14,7 +14,7 @@ args
   .option('source', 'The current running instance of Ghost. This url will be replaced by the [publish] one.','http://localhost:2368')
   .option('dest', 'The folder where the static files will be downloaded', 'static')
   .option('publish', 'The url that will point to the static Ghost site', 'http://localhost:8080')
-  .option('to-replace', 'List of comma-separated urls, if you want to replace other URLs than [source] by [publish].')
+  .option('to-replace', 'List of comma-separated urls, if you want to replace other URLs than [source] by [publish].', null)
   
 
 const flags = args.parse(process.argv, {
@@ -35,9 +35,7 @@ class RewritterPlugin {
       if (!binary) {
         try {
           let data = fs.readFileSync(resPath, 'utf8')
-          for (const url of this.replaceUrls) {
-            data = data.replace(new RegExp(scraper.localURL, 'g'), url)
-          }
+          data = data.replace(new RegExp(scraper.replaceUrls, 'g'), scraper.publishURL)
           fs.writeFileSync(resPath, data, 'utf8')
         } catch (e) {
           console.error(e)
@@ -62,11 +60,11 @@ class Scraper {
     this.publishURL = flags.publish
     this.destFolder = path.resolve(flags.dest)
     this.tmpFolder = path.resolve('tmp')
-    this.replaceUrls = flags['to-replace'] ? flags['to-replace'].replace(/\s/g, '').split(',') : [this.publishURL]
+    this.replaceUrls = flags.toReplace ? flags.toReplace.replace(/\s/g, '').split(',').join('|') : [this.publishURL]
 
     console.log('----')
     console.log(`Will download from ${this.localURL} to ${path.resolve(this.destFolder)}`)
-    console.log(`All references to ${this.localURL} will be replaced by ${this.publishURL}`)
+    console.log(`All references to ${this.replaceUrls} will be replaced by ${this.publishURL}`)
     console.log('----')
   }
 
