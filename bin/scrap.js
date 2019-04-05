@@ -60,7 +60,7 @@ class Scraper {
     this.publishURL = flags.publish
     this.destFolder = path.resolve(flags.dest)
     this.tmpFolder = path.resolve('tmp')
-    this.replaceUrls = flags.toReplace ? flags.toReplace.replace(/\s/g, '').split(',').join('|') : [this.publishURL]
+    this.replaceUrls = flags.toReplace ? flags.toReplace.replace(/\s/g, '').split(',').join('|') : [this.localURL]
 
     console.log('----')
     console.log(`Will download from ${this.localURL} to ${path.resolve(this.destFolder)}`)
