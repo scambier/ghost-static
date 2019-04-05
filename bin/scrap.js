@@ -14,7 +14,7 @@ args
   .option('source', 'The current running instance of Ghost. This url will be replaced by the [publish] one.','http://localhost:2368')
   .option('dest', 'The folder where the static files will be downloaded', 'static')
   .option('publish', 'The url that will point to the static Ghost site', 'http://localhost:8080')
-  .option('to-replace', 'List of comma-separated urls, if you want to replace other URLs than [source] by [publish].', null)
+  .option('to-replace', 'List of comma-separated urls, if you want to replace other URLs than [source] by [publish].', '')
   
 
 const flags = args.parse(process.argv, {
