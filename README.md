@@ -4,7 +4,7 @@
 
 **Convert your dynamic Ghost blog to a static website.**
 
-Works without any external dependency, tested on Windows with Ghost 2 and the default Casper theme.
+Works without any external dependency, tested on Windows and Raspbian, with Ghost 2 and the default Casper theme.
 
 ## Installation
 
