@@ -18,6 +18,7 @@
   },
   "author": "Simon Cambier <simon.cambier@protonmail.com> (https://scambier.github.io/)",
   "license": "MIT",
+  "keywords": ["ghost", "blog", "static"],
   "dependencies": {
     "args": "^5.0.1",
     "isbinaryfile": "^4.0.0",
