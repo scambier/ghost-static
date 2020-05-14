@@ -1,3 +1,7 @@
+**Unmaintained**
+
+This was a small experiment to build a static site from the default Ghost frontend. Since Ghost can be used as a headless CMS, this package is not particularly useful.
+
 # Ghost static
 
 [![npm version](https://badge.fury.io/js/ghost-static.svg)](https://badge.fury.io/js/ghost-static) [![dep](https://david-dm.org/scambier/ghost-static.svg)](https://david-dm.org/scambier/ghost-static#info=devDependencies)
